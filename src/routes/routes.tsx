@@ -6,7 +6,7 @@ import ProtectRoute from "@/components/ProtectRoute";
 import FormList from "@/pages/FormList";
 import { ERoutePath } from "./route-path.enum";
 import Signin from "@/pages/Auth/Signin/Signin";
-import Signup from "@/pages/Auth/SignUp/Signup";
+import Signup from "@/pages/Auth/Signup/Signup";
 
 export const AppRoutes = createBrowserRouter([
   {
