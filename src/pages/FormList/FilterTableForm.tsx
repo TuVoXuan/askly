@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DatePicker from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
@@ -14,9 +16,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EFormStatus } from "@/types/enum";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
-import type { DateRange } from "react-day-picker";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as Yup from "yup";
+
+interface FilterTableFormProps {
+  value: any;
+  onApply: (value: any) => void;
+  onReset: () => void;
+  totalFilters?: number;
+}
 
 const StatusOptions = [
   { value: EFormStatus.DRAFT, label: "Draft" },
@@ -24,57 +35,114 @@ const StatusOptions = [
   { value: EFormStatus.ARCHIVED, label: "Archived" },
 ];
 
-export default function FilterTableForm() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
+const FilterSchema = Yup.object().shape({
+  status: Yup.string(),
+  createdAt: Yup.object()
+    .shape({
+      from: Yup.date().required(),
+      to: Yup.date().required(),
+    })
+    .optional(),
+});
+
+type FilterFormValues = Yup.InferType<typeof FilterSchema>;
+
+export default function FilterTableForm({
+  value,
+  onApply,
+  onReset,
+  totalFilters,
+}: FilterTableFormProps) {
+  const { control, handleSubmit, reset } = useForm({
+    resolver: yupResolver(FilterSchema),
   });
+
+  // useEffect(() => {
+  //   if (value) {
+  //     reset(value);
+  //   }
+  // }, [value, reset]);
+
+  function onSubmit(data: FilterFormValues) {
+    console.log(data);
+    onApply(data);
+  }
+
+  function handleClear() {
+    reset();
+    onReset();
+  }
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" className="relative">
           <SlidersHorizontal className="h-4 w-4" /> Filter
+          {!!totalFilters && totalFilters > 0 && (
+            <Badge
+              variant="secondary"
+              className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-blue-500 text-white dark:bg-blue-600"
+            >
+              {totalFilters}
+            </Badge>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[350px]">
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            <h4 className="leading-none font-medium">Filter</h4>
-            <p className="text-muted-foreground text-sm">
-              Customize the table view by applying filters.
-            </p>
-          </div>
-          <div className="grid gap-2">
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="width">Status</Label>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  {StatusOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <h4 className="leading-none font-medium">Filter</h4>
+              <p className="text-muted-foreground text-sm">
+                Customize the table view by applying filters.
+              </p>
             </div>
-            <div className="grid grid-cols-3 items-center gap-4">
-              <Label htmlFor="maxWidth">Created At</Label>
-              <DatePicker
-                mode="range"
-                dateRange={dateRange}
-                onRangeSelect={setDateRange}
+            <div className="grid gap-2">
+              <Controller
+                control={control}
+                name="status"
+                render={({ field: { value, onChange } }) => (
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="width">Status</Label>
+                    <Select value={value} onValueChange={onChange}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Theme" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {StatusOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="createdAt"
+                render={({ field: { value, onChange } }) => (
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="maxWidth">Created At</Label>
+                    <DatePicker
+                      mode="range"
+                      dateRange={value}
+                      onRangeSelect={onChange}
+                    />
+                  </div>
+                )}
               />
             </div>
+            <div className="w-full flex justify-end gap-x-3">
+              <Button type="button" variant={"outline"} onClick={handleClear}>
+                Clear
+              </Button>
+              <Button type="submit">Apply</Button>
+            </div>
           </div>
-          <div className="w-full flex justify-end gap-x-3">
-            <Button variant={"outline"}>Clear</Button>
-            <Button>Apply</Button>
-          </div>
-        </div>
+        </form>
       </PopoverContent>
     </Popover>
   );

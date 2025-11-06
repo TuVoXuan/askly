@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import FilterTableForm from "./FilterTableForm";
+import useFilterFormList from "@/hooks/filters/useFilterFormList";
 
 type FormItem = {
   id: string;
@@ -36,7 +37,8 @@ export default function TableForms() {
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get("page") ?? "1");
   const pageSize = Number(searchParams.get("pageSize") ?? "10");
-
+  const { filter, totalFilters, resetFilters, updateFilter } =
+    useFilterFormList();
   const columns: ColumnDef<FormItem>[] = [
     {
       accessorKey: "name",
@@ -121,7 +123,12 @@ export default function TableForms() {
         <div className="flex items-center gap-x-3">
           <Input placeholder="Search..." className="w-[250px]" />
           <Button>Search</Button>
-          <FilterTableForm />
+          <FilterTableForm
+            value={filter}
+            onApply={updateFilter}
+            onReset={resetFilters}
+            totalFilters={totalFilters}
+          />
         </div>
 
         <Button variant={"outline"}>
