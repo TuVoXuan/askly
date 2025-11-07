@@ -21,9 +21,10 @@ import {
   Eye,
   Plus,
 } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import FilterTableForm from "./FilterTableForm";
 import useFilterFormList from "@/hooks/filters/useFilterFormList";
+import { ERoutePath } from "@/routes/route-path.enum";
 
 type FormItem = {
   id: string;
@@ -39,6 +40,8 @@ export default function TableForms() {
   const pageSize = Number(searchParams.get("pageSize") ?? "10");
   const { filter, totalFilters, resetFilters, updateFilter } =
     useFilterFormList();
+  const navigate = useNavigate();
+
   const columns: ColumnDef<FormItem>[] = [
     {
       accessorKey: "name",
@@ -81,11 +84,11 @@ export default function TableForms() {
                 <Eye className="h-4 w-4" />
                 View Answers
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500">
+              <DropdownMenuItem className="text-red-500 focus:text-red-500">
                 <Link2Off className="h-4 w-4 text-red-500" />
                 Unpublish
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-500">
+              <DropdownMenuItem className="text-red-500 focus:text-red-500">
                 <Trash className="h-4 w-4 text-red-500" />
                 Delete
               </DropdownMenuItem>
@@ -131,7 +134,10 @@ export default function TableForms() {
           />
         </div>
 
-        <Button variant={"outline"}>
+        <Button
+          variant={"outline"}
+          onClick={() => navigate(`/${ERoutePath.FORM_LIST}/create`)}
+        >
           <Plus className="h-4 w-4" />
           Add New Form
         </Button>
