@@ -18,7 +18,7 @@ import {
 import { EFormStatus } from "@/types/enum";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SlidersHorizontal } from "lucide-react";
-import { useEffect } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
 
@@ -42,7 +42,7 @@ const FilterSchema = Yup.object().shape({
       from: Yup.date().required(),
       to: Yup.date().required(),
     })
-    .optional(),
+    .notRequired(),
 });
 
 type FilterFormValues = Yup.InferType<typeof FilterSchema>;
@@ -53,28 +53,34 @@ export default function FilterTableForm({
   onReset,
   totalFilters,
 }: FilterTableFormProps) {
+  const [open, setOpen] = useState(false);
   const { control, handleSubmit, reset } = useForm({
     resolver: yupResolver(FilterSchema),
+    defaultValues: value,
   });
-
-  // useEffect(() => {
-  //   if (value) {
-  //     reset(value);
-  //   }
-  // }, [value, reset]);
 
   function onSubmit(data: FilterFormValues) {
     console.log(data);
     onApply(data);
+    setOpen(false);
   }
 
   function handleClear() {
-    reset();
+    reset(
+      {
+        status: "",
+        createdAt: null,
+      },
+      {
+        keepDefaultValues: false,
+      }
+    );
     onReset();
+    setOpen(false);
   }
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="relative">
           <SlidersHorizontal className="h-4 w-4" /> Filter

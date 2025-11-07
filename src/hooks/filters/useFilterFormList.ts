@@ -9,6 +9,9 @@ export default function useFilterFormList() {
       if(typeof value === 'string' && value.trim() !== '') {
         return acc + 1;
       }
+      if(typeof value === 'object' && value && Object.keys(value).length > 0){
+        return acc + 1;
+      }
       return acc;
     }, 0)
   }, [filter]);

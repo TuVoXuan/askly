@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
 import { ChevronDownIcon } from "lucide-react";
@@ -23,17 +23,19 @@ export default function DatePicker({
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
 
-  function renderSelectedDate() {
+  const renderSelectedDate = useCallback(() => {
     if (mode === "single" && selectedDate) {
-      return moment(selectedDate).format("DD/MM/YYYY");
+      return <p>{moment(selectedDate).format("DD/MM/YYYY")}</p>;
     }
     if (mode === "range" && dateRange) {
-      return `${moment(dateRange.from).format("DD/MM/YYYY")} - ${moment(
-        dateRange.to
-      ).format("DD/MM/YYYY")}`;
+      return (
+        <p>{`${moment(dateRange.from).format("DD/MM/YYYY")} - ${moment(
+          dateRange.to
+        ).format("DD/MM/YYYY")}`}</p>
+      );
     }
-    return "Select date";
-  }
+    return <p className="text-muted-foreground">Select date</p>;
+  }, [mode, selectedDate, dateRange]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,7 +54,6 @@ export default function DatePicker({
           <Calendar
             mode="single"
             selected={selectedDate}
-            captionLayout="dropdown"
             onSelect={(date) => {
               onSingleSelect?.(date);
               setOpen(false);
@@ -63,10 +64,8 @@ export default function DatePicker({
           <Calendar
             mode="range"
             selected={dateRange}
-            captionLayout="dropdown"
             onSelect={(range) => {
               onRangeSelect?.(range);
-              setOpen(false);
             }}
             numberOfMonths={2}
           />
