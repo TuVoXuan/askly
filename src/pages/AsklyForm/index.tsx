@@ -1,9 +1,24 @@
 import { Button } from "@/components/ui/button";
-import PageItem from "./PageItem";
-import CustomField from "./CustomField";
-import * as Yup from "yup";
-import { useFieldArray, useForm } from "react-hook-form";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Plus } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
+import * as Yup from "yup";
+import CustomField from "./CustomField";
+import PageItem from "./PageItem";
 
 const initialCustomFieldValue = {
   question: "",
@@ -22,22 +37,18 @@ const AsklyFormSchema = Yup.object().shape({
         ["fieldType", "min"],
         ([fieldType, min], schema) => {
           return min && fieldType === "number"
-            ? schema.min(min, `Max value must be less than ${min}`)
+            ? schema.min(min, `Max value must be greater than ${min}`)
             : schema;
         }
       ),
-      isDependOn: Yup.string(),
-      compare: Yup.string().when("isDependOn", ([isDependOn], schema) => {
-        return isDependOn ? schema.required() : schema;
-      }),
       minLength: Yup.number(),
       maxLength: Yup.number().when(
-        ["fieldType, minLength"],
+        ["fieldType", "minLength"],
         ([fieldType, minLength], schema) => {
-          return fieldType === "string" && minLength
+          return minLength && fieldType === "string"
             ? schema.min(
                 minLength,
-                `Max Length value must greater than ${minLength}`
+                `Max length must be greater than ${minLength}`
               )
             : schema;
         }
@@ -58,8 +69,14 @@ export default function AsklyForm() {
   const { control, handleSubmit, watch } = useForm({
     resolver: yupResolver(AsklyFormSchema),
   });
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, swap } = useFieldArray({
     control,
     name: "customFields",
   });
@@ -70,6 +87,15 @@ export default function AsklyForm() {
 
   function onSubmit(data: AsklyFormDataType) {
     console.log("data: ", data);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = fields.findIndex((item) => item.id === active.id);
+      const newIndex = fields.findIndex((item) => item.id === over?.id);
+      swap(oldIndex, newIndex);
+    }
   }
 
   return (
@@ -96,17 +122,30 @@ export default function AsklyForm() {
       </div>
 
       <div className="flex-1 p-4 space-y-3 overflow-y-auto">
-        <Button variant={"outline"} onClick={handleAppendCustomField}>
-          Add Field
+        <Button onClick={handleAppendCustomField}>
+          <Plus /> Add Field
         </Button>
-        {fields.map((item, index) => (
-          <CustomField
-            key={item.id}
-            control={control}
-            watch={watch}
-            index={index}
-          />
-        ))}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={fields}
+            strategy={verticalListSortingStrategy}
+          >
+            {fields.map((item, index) => (
+              <CustomField
+                key={item.id}
+                control={control}
+                watch={watch}
+                index={index}
+                id={item.id}
+                remove={remove}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );

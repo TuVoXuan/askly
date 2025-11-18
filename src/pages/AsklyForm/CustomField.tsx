@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,20 +11,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EFieldType } from "@/types/enum";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CircleQuestionMark,
-  Equal,
-} from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { CircleQuestionMark, Copy, GripHorizontal, Trash2 } from "lucide-react";
 import { Controller } from "react-hook-form";
 
 const FieldTypeOptions = [
@@ -54,14 +52,29 @@ interface ICustomFieldProps {
   control: any;
   watch: any;
   index: number;
+  id: string;
+  remove: (index: number) => void;
 }
 
 export default function CustomField({
   control,
   watch,
   index,
+  id,
+  remove,
 }: ICustomFieldProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const fieldTypeWatch = watch(`customFields.${index}.fieldType`);
+  const lengthWatch = watch(`customFields.${index}.length`);
+  const minLengthWatch = watch(`customFields.${index}.minLength`);
+  const maxLengthWatch = watch(`customFields.${index}.maxLength`);
 
   function renderFieldType(fieldType: string) {
     switch (fieldType) {
@@ -75,13 +88,16 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Min:</span>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Min:</span>
                   <Input
+                    containerClassName="col-span-9"
+                    className="w-[200px]"
                     type="number"
                     value={value}
                     onChange={onChange}
                     helperText={error?.message}
+                    placeholder="Enter value"
                   />
                 </div>
               )}
@@ -94,78 +110,17 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Max:</span>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Max:</span>
                   <Input
+                    containerClassName="col-span-9"
+                    className="w-[200px]"
                     type="number"
                     value={value}
                     onChange={onChange}
                     helperText={error?.message}
+                    placeholder="Enter value"
                   />
-                </div>
-              )}
-            />
-
-            <div className="flex items-center gap-x-2">
-              <span>Is dependent on:</span>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select dependent field" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {/* Map the input should depend on here */}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <Controller
-              control={control}
-              name={`customFields.${index}.compare`}
-              render={({
-                field: { value, onChange },
-                fieldState: { error },
-              }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Compare:</span>
-                  <div>
-                    <ToggleGroup
-                      value={value}
-                      onValueChange={onChange}
-                      type="single"
-                      variant="outline"
-                      spacing={2}
-                      size="sm"
-                    >
-                      <ToggleGroupItem value="lt" aria-label="Less than">
-                        <ChevronLeft />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="lte"
-                        aria-label="Less than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronLeft />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="gte"
-                        aria-label="Greater than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronRight />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="gt" aria-label="Greater than">
-                        <ChevronRight />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
                 </div>
               )}
             />
@@ -174,137 +129,78 @@ export default function CustomField({
       case EFieldType.STRING:
         return (
           <>
-            <div className="flex items-center gap-x-4">
-              <Controller
-                control={control}
-                name={`customFields.${index}.length`}
-                render={({
-                  field: { value, onChange },
-                  fieldState: { error },
-                }) => (
-                  <div className="flex items-center gap-x-2">
-                    <span>Length:</span>
-                    <Input
-                      type="number"
-                      className="w-[100px]"
-                      value={value}
-                      onChange={onChange}
-                      helperText={error?.message}
-                    />
-                  </div>
-                )}
-              />
+            <Controller
+              control={control}
+              name={`customFields.${index}.length`}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Length:</span>
+                  <Input
+                    containerClassName="col-span-9"
+                    type="number"
+                    className="w-[200px]"
+                    value={value}
+                    onChange={onChange}
+                    helperText={error?.message}
+                    disabled={!!minLengthWatch || !!maxLengthWatch}
+                    placeholder="Enter value"
+                  />
+                </div>
+              )}
+            />
 
-              <Separator orientation="vertical" className="h-6!" />
-              <Controller
-                control={control}
-                name={`customFields.${index}.minLength`}
-                render={({
-                  field: { value, onChange },
-                  fieldState: { error },
-                }) => (
-                  <div className="flex items-center gap-x-2">
-                    <span>Min length:</span>
-                    <Input
-                      type="number"
-                      className="w-[100px]"
-                      value={value}
-                      onChange={onChange}
-                      helperText={error?.message}
-                    />
-                  </div>
-                )}
-              />
-              <Controller
-                control={control}
-                name={`customFields.${index}.maxLength`}
-                render={({
-                  field: { value, onChange },
-                  fieldState: { error },
-                }) => (
-                  <div className="flex items-center gap-x-2">
-                    <span>Max length:</span>
-                    <Input
-                      type="number"
-                      className="w-[100px]"
-                      value={value}
-                      onChange={onChange}
-                      helperText={error?.message}
-                    />
-                  </div>
-                )}
-              />
-            </div>
+            <Controller
+              control={control}
+              name={`customFields.${index}.minLength`}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Min length:</span>
+                  <Input
+                    containerClassName="col-span-9"
+                    type="number"
+                    className="w-[200px]"
+                    value={value}
+                    onChange={onChange}
+                    helperText={error?.message}
+                    disabled={!!lengthWatch}
+                    placeholder="Enter value"
+                  />
+                </div>
+              )}
+            />
+            <Controller
+              control={control}
+              name={`customFields.${index}.maxLength`}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Max length:</span>
+                  <Input
+                    containerClassName="col-span-9"
+                    type="number"
+                    className="w-[200px]"
+                    value={value}
+                    onChange={onChange}
+                    helperText={error?.message}
+                    disabled={!!lengthWatch}
+                    placeholder="Enter value"
+                  />
+                </div>
+              )}
+            />
           </>
         );
       case EFieldType.DATE:
         return (
           <>
-            <div className="flex items-center gap-x-2">
-              <span>Is dependent on:</span>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select dependent field" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {/* Map the input should depend on here */}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Controller
-              control={control}
-              name={`customFields.${index}.compare`}
-              render={({
-                field: { value, onChange },
-                fieldState: { error },
-              }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Compare:</span>
-                  <div>
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      spacing={2}
-                      size="sm"
-                      value={value}
-                      onValueChange={onChange}
-                    >
-                      <ToggleGroupItem value="lt" aria-label="Less than">
-                        <ChevronLeft />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="lte"
-                        aria-label="Less than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronLeft />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="gte"
-                        aria-label="Greater than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronRight />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="gt" aria-label="Greater than">
-                        <ChevronRight />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            />
-
             <Controller
               control={control}
               name={`customFields.${index}.format`}
@@ -312,42 +208,42 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Date format:</span>
-                  <div>
-                    <Select value={value} onValueChange={onChange}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select date format" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DateFormatOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Date format:</span>
+                  <div className="flex items-center gap-x-3 col-span-9">
+                    <div>
+                      <Select value={value} onValueChange={onChange}>
+                        <SelectTrigger className="w-[200px]">
+                          <SelectValue placeholder="Select date format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DateFormatOptions.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {error?.message && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {error.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <CircleQuestionMark className="size-4 text-black/60" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        This format will use to display date follow selected
-                        format
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <span className="text-black/50">
-                    show example with the selected format here{" "}
-                  </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CircleQuestionMark className="size-4 text-black/60" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          This format will use to display date follow selected
+                          format
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-black/50">show example here</span>
+                  </div>
                 </div>
               )}
             />
@@ -356,71 +252,6 @@ export default function CustomField({
       case EFieldType.DATE_TIME:
         return (
           <>
-            <div className="flex items-center gap-x-2">
-              <span>Is dependent on:</span>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select dependent field" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {/* Map the input should depend on here */}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Controller
-              control={control}
-              name={`customFields.${index}.compare`}
-              render={({
-                field: { value, onChange },
-                fieldState: { error },
-              }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Compare:</span>
-                  <div>
-                    <ToggleGroup
-                      type="single"
-                      variant="outline"
-                      spacing={2}
-                      size="sm"
-                      value={value}
-                      onValueChange={onChange}
-                    >
-                      <ToggleGroupItem value="lt" aria-label="Less than">
-                        <ChevronLeft />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="lte"
-                        aria-label="Less than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronLeft />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem
-                        value="gte"
-                        aria-label="Greater than equal"
-                        className="gap-x-0"
-                      >
-                        <ChevronRight />
-                        <Equal />
-                      </ToggleGroupItem>
-                      <ToggleGroupItem value="gt" aria-label="Greater than">
-                        <ChevronRight />
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            />
-
             <Controller
               control={control}
               name={`customFields.${index}.format`}
@@ -428,42 +259,44 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Date format:</span>
-                  <div>
-                    <Select value={value} onValueChange={onChange}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select date time format" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DateTimeFormatOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Date format:</span>
+                  <div className="flex items-center gap-x-3 col-span-9">
+                    <div>
+                      <Select value={value} onValueChange={onChange}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select date time format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DateTimeFormatOptions.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {error?.message && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {error.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <CircleQuestionMark className="size-4 text-black/60" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        This format will use to display date time follow
-                        selected format
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <span className="text-black/50">
-                    show example with the selected format here{" "}
-                  </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CircleQuestionMark className="size-4 text-black/60" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          This format will use to display date time follow
+                          selected format
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-black/50">
+                      show example with the selected format here{" "}
+                    </span>
+                  </div>
                 </div>
               )}
             />
@@ -479,42 +312,44 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Date format:</span>
-                  <div>
-                    <Select value={value} onValueChange={onChange}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select date format" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DateFormatOptions.map((item) => (
-                          <SelectItem key={item.value} value={item.value}>
-                            {item.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
-                  </div>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Date format:</span>
+                  <div className="flex items-center gap-x-3 col-span-9">
+                    <div>
+                      <Select value={value} onValueChange={onChange}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select date format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DateFormatOptions.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {error?.message && (
+                        <p className="mt-1 text-xs text-red-400">
+                          {error.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <CircleQuestionMark className="size-4 text-black/60" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        This format will use to display date follow selected
-                        format
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <span className="text-black/50">
-                    show example with the selected format here
-                  </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CircleQuestionMark className="size-4 text-black/60" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          This format will use to display date follow selected
+                          format
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <span className="text-black/50">
+                      show example with the selected format here
+                    </span>
+                  </div>
                 </div>
               )}
             />
@@ -527,9 +362,18 @@ export default function CustomField({
               control={control}
               name={`customFields.${index}.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Multiple files:</span>
-                  <Checkbox checked={value} onCheckedChange={onChange} />
+                <div className="grid grid-cols-12">
+                  <Label
+                    htmlFor={`customFields.${index}.isMultipleFiles`}
+                    className="col-span-3 font-normal text-base"
+                  >
+                    Multiple files:
+                  </Label>
+                  <Switch
+                    id={`customFields.${index}.isMultipleFiles`}
+                    checked={value}
+                    onCheckedChange={onChange}
+                  />
                 </div>
               )}
             />
@@ -541,17 +385,18 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Max File size:</span>
-                  <div>
-                    <Input type="number" value={value} onChange={onChange} />
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Max File size:</span>
+                  <div className="flex items-center gap-x-3 col-span-9">
+                    <Input
+                      className="w-[200px]"
+                      type="number"
+                      value={value}
+                      onChange={onChange}
+                      helperText={error?.message}
+                    />
+                    MB
                   </div>
-                  MB
                 </div>
               )}
             />
@@ -564,9 +409,18 @@ export default function CustomField({
               control={control}
               name={`customFields.${index}.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Multiple files:</span>
-                  <Checkbox checked={value} onCheckedChange={onChange} />
+                <div className="grid grid-cols-12">
+                  <Label
+                    htmlFor={`customFields.${index}.isMultipleFiles`}
+                    className="col-span-3 font-normal text-base"
+                  >
+                    Multiple files:
+                  </Label>
+                  <Switch
+                    id={`customFields.${index}.isMultipleFiles`}
+                    checked={value}
+                    onCheckedChange={onChange}
+                  />
                 </div>
               )}
             />
@@ -578,17 +432,18 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-center gap-x-2">
-                  <span>Max File size:</span>
-                  <div>
-                    <Input type="number" value={value} onChange={onChange} />
-                    {error?.message && (
-                      <p className="mt-1 text-xs text-red-400">
-                        {error.message}
-                      </p>
-                    )}
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Max File size:</span>
+                  <div className="flex items-center gap-x-3 col-span-9">
+                    <Input
+                      className="w-[200px]"
+                      type="number"
+                      value={value}
+                      onChange={onChange}
+                      helperText={error?.message}
+                    />
+                    MB
                   </div>
-                  MB
                 </div>
               )}
             />
@@ -604,9 +459,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-start gap-x-2">
-                  <span className="shrink-0">List options:</span>
-                  <div>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">List options:</span>
+                  <div className="col-span-9">
                     <Textarea
                       placeholder={`Option 1\nOption 2\nOption 3\nPress enter to break line to add new option`}
                       value={value}
@@ -629,9 +484,11 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-start gap-x-2">
-                  <span className="shrink-0">Max selected items:</span>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">Max selected items:</span>
                   <Input
+                    containerClassName="col-span-9"
+                    className="w-[200px]"
                     type="number"
                     value={value}
                     onChange={onChange}
@@ -652,9 +509,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="flex items-start gap-x-2">
-                  <span className="shrink-0">List options:</span>
-                  <div>
+                <div className="grid grid-cols-12">
+                  <span className="col-span-3">List options:</span>
+                  <div className="col-span-9">
                     <Textarea
                       placeholder={`Option 1\nOption 2\nOption 3\nPress enter to break line to add new option`}
                       value={value}
@@ -677,19 +534,34 @@ export default function CustomField({
   }
 
   return (
-    <div className="rounded-sm border py-2 px-3 space-y-3 w-fit">
+    <div
+      style={style}
+      className="rounded-sm border py-2 px-3 space-y-3 w-[700px] bg-white"
+    >
+      <div className="flex justify-center w-full">
+        <button
+          ref={setNodeRef}
+          {...listeners}
+          {...attributes}
+          className="px-1 hover:bg-accent text-accent-foreground rounded-sm"
+        >
+          <GripHorizontal />
+        </button>
+      </div>
+
       <Controller
         control={control}
         name={`customFields.${index}.question`}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <div className="flex items-start gap-x-2">
-            <span>Question:</span>
-            <div>
+          <div className="grid grid-cols-12">
+            <span className="col-span-3">Question:</span>
+            <div className="col-span-9">
               <Textarea
                 rows={1}
-                className="w-[500px]"
                 value={value}
                 onChange={onChange}
+                className="w-[500px]"
+                placeholder="Enter question"
               />
               {error?.message && (
                 <p className="mt-1 text-xs text-red-400">{error.message}</p>
@@ -699,49 +571,86 @@ export default function CustomField({
         )}
       />
 
-      <div className="flex gap-x-10">
-        <Controller
-          control={control}
-          name={`customFields.${index}.fieldType`}
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <div className="flex items-center gap-x-2">
-              <span>Field type:</span>
-              <div>
-                <Select value={value} onValueChange={onChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a fruit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {FieldTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {error?.message && (
-                  <p className="mt-1 text-xs text-red-400">{error.message}</p>
-                )}
-              </div>
+      <Controller
+        control={control}
+        name={`customFields.${index}.fieldType`}
+        render={({ field: { value, onChange }, fieldState: { error } }) => (
+          <div className="grid grid-cols-12">
+            <span className="col-span-3">Field type:</span>
+            <div className="col-span-9">
+              <Select value={value} onValueChange={onChange}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select field type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {FieldTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {error?.message && (
+                <p className="mt-1 text-xs text-red-400">{error.message}</p>
+              )}
             </div>
-          )}
-        />
+          </div>
+        )}
+      />
 
+      {fieldTypeWatch && renderFieldType(fieldTypeWatch)}
+      <Separator orientation="horizontal" />
+      <div className="flex justify-end items-center">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size={"icon-lg"} variant={"ghost"} className="rounded-full">
+              <Copy />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Copy</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size={"icon-lg"}
+              variant={"ghost"}
+              className="rounded-full"
+              onClick={() => remove(index)}
+            >
+              <Trash2 />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Delete</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Separator orientation="vertical" className="h-8! mx-3" />
         <Controller
           control={control}
-          name={`customFields.${control}.isRequired`}
+          name={`customFields.${index}.isRequired`}
           render={({ field: { value, onChange } }) => (
-            <div className="flex items-center gap-x-2">
-              <span>Is Required:</span>
-              <Checkbox checked={value} onCheckedChange={onChange} />
+            <div className="flex items-center gap-x-3">
+              <Label
+                htmlFor={`customFields.${index}.isRequired`}
+                className="col-span-3 font-normal text-base"
+              >
+                Is required
+              </Label>
+              <Switch
+                id={`customFields.${index}.isRequired`}
+                checked={value}
+                onCheckedChange={onChange}
+              />
             </div>
           )}
         />
       </div>
-
-      {fieldTypeWatch && renderFieldType(fieldTypeWatch)}
     </div>
   );
 }
