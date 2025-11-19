@@ -22,6 +22,7 @@ import { EFieldType } from "@/types/enum";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CircleQuestionMark, Copy, GripHorizontal, Trash2 } from "lucide-react";
+import moment from "moment";
 import { Controller } from "react-hook-form";
 
 const FieldTypeOptions = [
@@ -44,7 +45,7 @@ const DateFormatOptions = [
 ];
 
 const DateTimeFormatOptions = [
-  { label: "MMM DD, YYYY at HH:mm", value: "MMM DD, YYYY at HH:mm" },
+  { label: "MMM DD, YYYY HH:mm", value: "MMM DD, YYYY HH:mm" },
   { label: "DD/MM/YYYY HH:mm", value: "DD/MM/YYYY HH:mm" },
 ];
 
@@ -75,6 +76,7 @@ export default function CustomField({
   const lengthWatch = watch(`customFields.${index}.length`);
   const minLengthWatch = watch(`customFields.${index}.minLength`);
   const maxLengthWatch = watch(`customFields.${index}.maxLength`);
+  const formatWatch = watch(`customFields.${index}.format`);
 
   function renderFieldType(fieldType: string) {
     switch (fieldType) {
@@ -242,7 +244,11 @@ export default function CustomField({
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                    <span className="text-black/50">show example here</span>
+                    {formatWatch && (
+                      <span className="text-black/50">
+                        ex: {moment(new Date()).format(formatWatch)}
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
@@ -293,9 +299,11 @@ export default function CustomField({
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                    <span className="text-black/50">
-                      show example with the selected format here{" "}
-                    </span>
+                    {formatWatch && (
+                      <span className="text-black/50">
+                        ex: {moment(new Date()).format(formatWatch)}
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
@@ -346,9 +354,11 @@ export default function CustomField({
                         </p>
                       </TooltipContent>
                     </Tooltip>
-                    <span className="text-black/50">
-                      show example with the selected format here
-                    </span>
+                    {formatWatch && (
+                      <span className="text-black/50">
+                        ex: {moment(new Date()).format(formatWatch)}
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
