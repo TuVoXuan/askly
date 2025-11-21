@@ -7,9 +7,15 @@ type InputProps = React.ComponentProps<"input"> & {
   containerClassName?: string;
 };
 
-function Input({ className, type, helperText, ...props }: InputProps) {
+function Input({
+  className,
+  type,
+  helperText,
+  containerClassName,
+  ...props
+}: InputProps) {
   return (
-    <div className={cn(props.containerClassName)}>
+    <div className={cn(containerClassName)}>
       <input
         type={type}
         data-slot="input"

@@ -1,14 +1,22 @@
-export default function PageItem() {
+import { cn } from "@/lib/utils";
+import type React from "react";
+
+interface Props {
+  children: React.ReactNode;
+  active?: boolean;
+  onClick: () => void;
+}
+
+export default function PageItem({ children, active, onClick }: Props) {
   return (
-    <div className="w-[150px] h-[200px] border p-3 rounded-sm bg-white shadow-2xs space-y-2">
-      <div className="space-y-1">
-        <span>.......</span>
-        <div className="h-5 w-full bg-gray-200 rounded-sm border"></div>
-      </div>
-      <div className="space-y-1">
-        <span>.......</span>
-        <div className="h-5 w-full bg-gray-200 rounded-sm border"></div>
-      </div>
+    <div
+      className={cn(
+        "w-[200px] px-3 py-1 rounded-md border cursor-pointer",
+        active && "bg-black/10"
+      )}
+      onClick={onClick}
+    >
+      {children}
     </div>
   );
 }
