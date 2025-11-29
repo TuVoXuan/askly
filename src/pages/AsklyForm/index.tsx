@@ -5,45 +5,62 @@ import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import CustomFieldList from "./CustomFieldList";
 import PageItem from "./PageItem";
+import { Plus } from "lucide-react";
 
 const AsklyFormSchema = Yup.object().shape({
   pages: Yup.array()
     .of(
       Yup.object().shape({
-        customFields: Yup.array().of(
-          Yup.object().shape({
-            question: Yup.string().required("Question is required!"),
-            isRequired: Yup.boolean(),
-            fieldType: Yup.string().required("Field type is required!"),
-            min: Yup.number(),
-            max: Yup.number().when(
-              ["fieldType", "min"],
-              ([fieldType, min], schema) => {
-                return min && fieldType === "number"
-                  ? schema.min(min, `Max value must be greater than ${min}`)
-                  : schema;
-              }
-            ),
-            minLength: Yup.number(),
-            maxLength: Yup.number().when(
-              ["fieldType", "minLength"],
-              ([fieldType, minLength], schema) => {
-                return minLength && fieldType === "string"
-                  ? schema.min(
-                      minLength,
-                      `Max length must be greater than ${minLength}`
-                    )
-                  : schema;
-              }
-            ),
-            length: Yup.number(),
-            listOptions: Yup.string(),
-            maxSelectedItems: Yup.number(),
-            format: Yup.string(),
-            isMultipleFiles: Yup.boolean(),
-            maxFileSize: Yup.number(),
-          })
-        ),
+        itemFields: Yup.array()
+          .of(
+            Yup.object().shape({
+              customField: Yup.object()
+                .shape({
+                  question: Yup.string().required("Question is required!"),
+                  isRequired: Yup.boolean(),
+                  fieldType: Yup.string().required("Field type is required!"),
+                  min: Yup.number(),
+                  max: Yup.number().when(
+                    ["fieldType", "min"],
+                    ([fieldType, min], schema) => {
+                      return min && fieldType === "number"
+                        ? schema.min(
+                            min,
+                            `Max value must be greater than ${min}`
+                          )
+                        : schema;
+                    }
+                  ),
+                  minLength: Yup.number(),
+                  maxLength: Yup.number().when(
+                    ["fieldType", "minLength"],
+                    ([fieldType, minLength], schema) => {
+                      return minLength && fieldType === "string"
+                        ? schema.min(
+                            minLength,
+                            `Max length must be greater than ${minLength}`
+                          )
+                        : schema;
+                    }
+                  ),
+                  length: Yup.number(),
+                  listOptions: Yup.string(),
+                  maxSelectedItems: Yup.number(),
+                  format: Yup.string(),
+                  isMultipleFiles: Yup.boolean(),
+                  maxFileSize: Yup.number(),
+                })
+                .optional(),
+              titleField: Yup.object()
+                .shape({
+                  title: Yup.string(),
+                  description: Yup.string(),
+                })
+                .optional(),
+            })
+          )
+          .min(1, "Page must have at least 1 field.")
+          .required("Custom fields are required."),
       })
     )
     .min(1, "Form must be has 1 page.")
@@ -58,7 +75,7 @@ export default function AsklyForm() {
   const methods = useForm({
     resolver: yupResolver(AsklyFormSchema),
     defaultValues: {
-      pages: [{ customFields: [] }],
+      pages: [{ itemFields: [] }],
     },
   });
 
@@ -72,7 +89,8 @@ export default function AsklyForm() {
   });
 
   function handleAppendPage() {
-    appendPage({ customFields: [] });
+    appendPage({ itemFields: [] });
+    setActivePageIndex((prev) => prev + 1);
   }
 
   function onSubmit(data: AsklyFormDataType) {
@@ -89,6 +107,12 @@ export default function AsklyForm() {
                 key={page.id}
                 active={index === activePageIndex}
                 onClick={() => setActivePageIndex(index)}
+                showDelete={pageFields.length > 1}
+                onClickDelete={() => removePage(index)}
+                hasError={Boolean(
+                  methods.formState.errors.pages &&
+                    methods.formState.errors.pages[index]
+                )}
               >
                 Page {index + 1}
               </PageItem>
@@ -99,7 +123,7 @@ export default function AsklyForm() {
               variant={"outline"}
               onClick={handleAppendPage}
             >
-              Add New Page
+              <Plus className="size-4" /> Add New Page
             </Button>
           </div>
         </div>

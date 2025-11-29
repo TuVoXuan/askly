@@ -1,9 +1,9 @@
 export const ERoutePath = {
   ROOT: '',
-  NOT_FOUND: 'not_found',
-  SIGN_IN: 'sign_in',
-  SIGN_UP: 'sign_up',
+  NOT_FOUND: 'not-found',
+  SIGN_IN: 'sign-in',
+  SIGN_UP: 'sign-up',
 
   // Form List
-  FORM_LIST: 'form_list',
+  FORM_LIST: 'form-list',
 } as const;

@@ -54,7 +54,8 @@ interface ICustomFieldProps {
   watch: any;
   index: number;
   id: string;
-  remove: (index: number) => void;
+  onCopy: (index: number) => void;
+  onRemove: (index: number) => void;
   // baseName is the path prefix for the field array, e.g. "pages.0.customFields".
   // Default kept as "customFields" for backward compatibility.
   baseName?: string;
@@ -65,7 +66,8 @@ export default function CustomField({
   watch,
   index,
   id,
-  remove,
+  onCopy,
+  onRemove,
   baseName = "customFields",
 }: ICustomFieldProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -76,11 +78,11 @@ export default function CustomField({
     transition,
   };
 
-  const fieldTypeWatch = watch(`${baseName}.${index}.fieldType`);
-  const lengthWatch = watch(`${baseName}.${index}.length`);
-  const minLengthWatch = watch(`${baseName}.${index}.minLength`);
-  const maxLengthWatch = watch(`${baseName}.${index}.maxLength`);
-  const formatWatch = watch(`${baseName}.${index}.format`);
+  const fieldTypeWatch = watch(`${baseName}.${index}.customField.fieldType`);
+  const lengthWatch = watch(`${baseName}.${index}.customField.length`);
+  const minLengthWatch = watch(`${baseName}.${index}.customField.minLength`);
+  const maxLengthWatch = watch(`${baseName}.${index}.customField.maxLength`);
+  const formatWatch = watch(`${baseName}.${index}.customField.format`);
 
   function renderFieldType(fieldType: string) {
     switch (fieldType) {
@@ -89,7 +91,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.min`}
+              name={`${baseName}.${index}.customField.min`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -111,7 +113,7 @@ export default function CustomField({
 
             <Controller
               control={control}
-              name={`${baseName}.${index}.max`}
+              name={`${baseName}.${index}.customField.max`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -137,7 +139,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.length`}
+              name={`${baseName}.${index}.customField.length`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -160,7 +162,7 @@ export default function CustomField({
 
             <Controller
               control={control}
-              name={`${baseName}.${index}.minLength`}
+              name={`${baseName}.${index}.customField.minLength`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -182,7 +184,7 @@ export default function CustomField({
             />
             <Controller
               control={control}
-              name={`${baseName}.${index}.maxLength`}
+              name={`${baseName}.${index}.customField.maxLength`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -209,7 +211,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.format`}
+              name={`${baseName}.${index}.customField.format`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -267,7 +269,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.format`}
+              name={`${baseName}.${index}.customField.format`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -325,7 +327,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.format`}
+              name={`${baseName}.${index}.customField.format`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -383,17 +385,17 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.isMultipleFiles`}
+              name={`${baseName}.${index}.customField.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
                 <div className="grid grid-cols-12">
                   <Label
-                    htmlFor={`${baseName}.${index}.isMultipleFiles`}
+                    htmlFor={`${baseName}.${index}.customField.isMultipleFiles`}
                     className="col-span-3 font-normal text-base"
                   >
                     Multiple files:
                   </Label>
                   <Switch
-                    id={`${baseName}.${index}.isMultipleFiles`}
+                    id={`${baseName}.${index}.customField.isMultipleFiles`}
                     checked={value}
                     onCheckedChange={onChange}
                   />
@@ -403,7 +405,7 @@ export default function CustomField({
 
             <Controller
               control={control}
-              name={`${baseName}.${index}.maxFileSize`}
+              name={`${baseName}.${index}.customField.maxFileSize`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -430,17 +432,17 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.isMultipleFiles`}
+              name={`${baseName}.${index}.customField.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
                 <div className="grid grid-cols-12">
                   <Label
-                    htmlFor={`${baseName}.${index}.isMultipleFiles`}
+                    htmlFor={`${baseName}.${index}.customField.isMultipleFiles`}
                     className="col-span-3 font-normal text-base"
                   >
                     Multiple files:
                   </Label>
                   <Switch
-                    id={`${baseName}.${index}.isMultipleFiles`}
+                    id={`${baseName}.${index}.customField.isMultipleFiles`}
                     checked={value}
                     onCheckedChange={onChange}
                   />
@@ -450,7 +452,7 @@ export default function CustomField({
 
             <Controller
               control={control}
-              name={`${baseName}.${index}.maxFileSize`}
+              name={`${baseName}.${index}.customField.maxFileSize`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -477,7 +479,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.listOptions`}
+              name={`${baseName}.${index}.customField.listOptions`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -503,7 +505,7 @@ export default function CustomField({
 
             <Controller
               control={control}
-              name={`${baseName}.${index}.maxSelectedItems`}
+              name={`${baseName}.${index}.customField.maxSelectedItems`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -528,7 +530,7 @@ export default function CustomField({
           <>
             <Controller
               control={control}
-              name={`${baseName}.${index}.listOptions`}
+              name={`${baseName}.${index}.customField.listOptions`}
               render={({
                 field: { value, onChange },
                 fieldState: { error },
@@ -576,7 +578,7 @@ export default function CustomField({
 
       <Controller
         control={control}
-        name={`${baseName}.${index}.question`}
+        name={`${baseName}.${index}.customField.question`}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div className="grid grid-cols-12">
             <span className="col-span-3">Question:</span>
@@ -599,7 +601,7 @@ export default function CustomField({
 
       <Controller
         control={control}
-        name={`${baseName}.${index}.fieldType`}
+        name={`${baseName}.${index}.customField.fieldType`}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
           <div className="grid grid-cols-12">
             <span className="col-span-3">Field type:</span>
@@ -631,7 +633,12 @@ export default function CustomField({
       <div className="flex justify-end items-center">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size={"icon-lg"} variant={"ghost"} className="rounded-full">
+            <Button
+              size={"icon-lg"}
+              variant={"ghost"}
+              className="rounded-full"
+              onClick={() => onCopy(index)}
+            >
               <Copy />
             </Button>
           </TooltipTrigger>
@@ -646,7 +653,7 @@ export default function CustomField({
               size={"icon-lg"}
               variant={"ghost"}
               className="rounded-full"
-              onClick={() => remove(index)}
+              onClick={() => onRemove(index)}
             >
               <Trash2 />
             </Button>
@@ -659,7 +666,7 @@ export default function CustomField({
         <Separator orientation="vertical" className="h-8! mx-3" />
         <Controller
           control={control}
-          name={`${baseName}.${index}.isRequired`}
+          name={`${baseName}.${index}.customField.isRequired`}
           render={({ field: { value, onChange } }) => (
             <div className="flex items-center gap-x-3">
               <Label

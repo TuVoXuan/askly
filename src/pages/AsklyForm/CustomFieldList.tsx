@@ -16,23 +16,24 @@ import {
 import { Plus } from "lucide-react";
 import CustomField from "./CustomField";
 import { useFieldArray, useFormContext } from "react-hook-form";
-
+import { cloneDeep } from "lodash";
 interface Props {
   pageIndex: number;
   show?: boolean;
 }
 
 export default function CustomFieldList({ pageIndex, show }: Props) {
-  const { control, watch } = useFormContext();
+  const { control, watch, getValues } = useFormContext();
 
   const {
     fields: customFields,
     append: addCustomField,
     remove: removeCustomField,
     swap: swapCustomField,
+    insert: insertCustomField,
   } = useFieldArray({
     control,
-    name: `pages.${pageIndex}.customFields`,
+    name: `pages.${pageIndex}.itemFields`,
   });
 
   const sensors = useSensors(
@@ -50,12 +51,20 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
       swapCustomField(oldIndex, newIndex);
     }
   }
+
   function handleAppendCustomField() {
     addCustomField({
       question: "",
       isRequired: false,
       fieldType: "",
     });
+  }
+
+  function handleCopyCustomField(index: number) {
+    const fieldToCopy = cloneDeep(
+      getValues(`pages.${pageIndex}.customFields.${index}`)
+    );
+    insertCustomField(index + 1, fieldToCopy);
   }
 
   if (!show) return null;
@@ -81,8 +90,9 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
               watch={watch}
               index={index}
               id={item.id}
-              remove={removeCustomField}
-              baseName={`pages.${pageIndex}.customFields`}
+              onRemove={removeCustomField}
+              onCopy={handleCopyCustomField}
+              baseName={`pages.${pageIndex}.itemFields`}
             />
           ))}
         </SortableContext>
