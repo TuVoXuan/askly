@@ -75,7 +75,19 @@ export default function AsklyForm() {
   const methods = useForm({
     resolver: yupResolver(AsklyFormSchema),
     defaultValues: {
-      pages: [{ itemFields: [] }],
+      pages: [
+        {
+          itemFields: [
+            {
+              customField: {
+                question: "",
+                isRequired: false,
+                fieldType: "",
+              },
+            },
+          ],
+        },
+      ],
     },
   });
 
@@ -89,7 +101,17 @@ export default function AsklyForm() {
   });
 
   function handleAppendPage() {
-    appendPage({ itemFields: [] });
+    appendPage({
+      itemFields: [
+        {
+          customField: {
+            question: "",
+            isRequired: false,
+            fieldType: "",
+          },
+        },
+      ],
+    });
     setActivePageIndex((prev) => prev + 1);
   }
 
