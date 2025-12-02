@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
@@ -19,6 +20,32 @@ const AsklyFormSchema = Yup.object().shape({
                   question: Yup.string().required("Question is required!"),
                   isRequired: Yup.boolean(),
                   fieldType: Yup.string().required("Field type is required!"),
+                  image: Yup.mixed()
+                    .optional()
+                    .test(
+                      "fileType",
+                      "Unsupported File Format",
+                      (value: any) => {
+                        if (!value) return true; // Skip validation if no file is provided
+                        const supportedFormats = [
+                          "image/jpg",
+                          "image/jpeg",
+                          "image/png",
+                          "image/gif",
+                        ];
+                        return supportedFormats.includes(value?.type);
+                      }
+                    )
+                    .test(
+                      "fileSize",
+                      "File size is too large",
+                      (value: any) => {
+                        if (!value) return true; // Skip validation if no file is provided
+                        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+                        return value?.size <= maxSizeInBytes;
+                      }
+                    ),
+                  options: Yup.string().optional(),
                   min: Yup.number(),
                   max: Yup.number().when(
                     ["fieldType", "min"],

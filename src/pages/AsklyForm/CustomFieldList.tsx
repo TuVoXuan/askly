@@ -62,7 +62,7 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
 
   function handleCopyCustomField(index: number) {
     const fieldToCopy = cloneDeep(
-      getValues(`pages.${pageIndex}.customFields.${index}`)
+      getValues(`pages.${pageIndex}.itemFields.${index}`)
     );
     insertCustomField(index + 1, fieldToCopy);
   }

@@ -24,6 +24,8 @@ import { CSS } from "@dnd-kit/utilities";
 import { CircleQuestionMark, Copy, GripHorizontal, Trash2 } from "lucide-react";
 import moment from "moment";
 import { Controller } from "react-hook-form";
+import { Image } from "lucide-react";
+import ResizableImage from "@/components/ResizeImage";
 
 const FieldTypeOptions = [
   { label: "Number", value: EFieldType.NUMBER },
@@ -96,10 +98,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Min:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Min:</span>
                   <Input
-                    containerClassName="col-span-9"
                     className="w-[200px]"
                     type="number"
                     value={value}
@@ -118,10 +119,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Max:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Max:</span>
                   <Input
-                    containerClassName="col-span-9"
                     className="w-[200px]"
                     type="number"
                     value={value}
@@ -144,10 +144,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Length:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Length:</span>
                   <Input
-                    containerClassName="col-span-9"
                     type="number"
                     className="w-[200px]"
                     value={value}
@@ -167,10 +166,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Min length:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Min length:</span>
                   <Input
-                    containerClassName="col-span-9"
                     type="number"
                     className="w-[200px]"
                     value={value}
@@ -189,10 +187,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Max length:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Max length:</span>
                   <Input
-                    containerClassName="col-span-9"
                     type="number"
                     className="w-[200px]"
                     value={value}
@@ -216,9 +213,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Date format:</span>
-                  <div className="flex items-center gap-x-3 col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">Date format:</span>
+                  <div className="flex items-center gap-x-3">
                     <div>
                       <Select value={value} onValueChange={onChange}>
                         <SelectTrigger
@@ -274,9 +271,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Date format:</span>
-                  <div className="flex items-center gap-x-3 col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">Date format:</span>
+                  <div className="flex items-center gap-x-3">
                     <div>
                       <Select value={value} onValueChange={onChange}>
                         <SelectTrigger
@@ -332,9 +329,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Date format:</span>
-                  <div className="flex items-center gap-x-3 col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">Date format:</span>
+                  <div className="flex items-center gap-x-3">
                     <div>
                       <Select value={value} onValueChange={onChange}>
                         <SelectTrigger
@@ -387,10 +384,10 @@ export default function CustomField({
               control={control}
               name={`${baseName}.${index}.customField.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
-                <div className="grid grid-cols-12">
+                <div className="flex items-center">
                   <Label
                     htmlFor={`${baseName}.${index}.customField.isMultipleFiles`}
-                    className="col-span-3 font-normal text-base"
+                    className="w-[150px] font-normal text-base"
                   >
                     Multiple files:
                   </Label>
@@ -410,9 +407,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Max File size:</span>
-                  <div className="flex items-center gap-x-3 col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">Max File size:</span>
+                  <div className="flex items-center gap-x-3">
                     <Input
                       className="w-[200px]"
                       type="number"
@@ -434,10 +431,10 @@ export default function CustomField({
               control={control}
               name={`${baseName}.${index}.customField.isMultipleFiles`}
               render={({ field: { value, onChange } }) => (
-                <div className="grid grid-cols-12">
+                <div className="flex items-center">
                   <Label
                     htmlFor={`${baseName}.${index}.customField.isMultipleFiles`}
-                    className="col-span-3 font-normal text-base"
+                    className="w-[150px] font-normal text-base"
                   >
                     Multiple files:
                   </Label>
@@ -457,9 +454,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Max File size:</span>
-                  <div className="flex items-center gap-x-3 col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">Max File size:</span>
+                  <div className="flex items-center gap-x-3">
                     <Input
                       className="w-[200px]"
                       type="number"
@@ -484,9 +481,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">List options:</span>
-                  <div className="col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">List options:</span>
+                  <div className="flex-1">
                     <Textarea
                       placeholder={`Option 1\nOption 2\nOption 3\nPress enter to break line to add new option`}
                       value={value}
@@ -510,10 +507,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">Max selected items:</span>
+                <div className="flex items-center">
+                  <span className="w-[150px]">Max selected items:</span>
                   <Input
-                    containerClassName="col-span-9"
                     className="w-[200px]"
                     type="number"
                     value={value}
@@ -535,9 +531,9 @@ export default function CustomField({
                 field: { value, onChange },
                 fieldState: { error },
               }) => (
-                <div className="grid grid-cols-12">
-                  <span className="col-span-3">List options:</span>
-                  <div className="col-span-9">
+                <div className="flex items-center">
+                  <span className="w-[150px]">List options:</span>
+                  <div className="flex-1">
                     <Textarea
                       placeholder={`Option 1\nOption 2\nOption 3\nPress enter to break line to add new option`}
                       value={value}
@@ -563,7 +559,7 @@ export default function CustomField({
   return (
     <div
       style={style}
-      className="rounded-sm border py-2 px-3 space-y-3 w-[700px] bg-white"
+      className="rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white"
     >
       <div className="flex justify-center w-full">
         <button
@@ -576,30 +572,75 @@ export default function CustomField({
         </button>
       </div>
 
-      <Controller
-        control={control}
-        name={`${baseName}.${index}.customField.question`}
-        render={({ field: { value, onChange }, fieldState: { error } }) => (
-          <div className="grid grid-cols-12">
-            <span className="col-span-3">Question:</span>
-            <div className="col-span-9">
-              <Textarea
-                rows={1}
-                value={value}
-                onChange={onChange}
-                className="w-[500px]"
-                placeholder="Enter question"
-                error={!!error?.message}
-              />
+      <div className="grid grid-cols-12">
+        <Controller
+          control={control}
+          name={`${baseName}.${index}.customField.question`}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <div className="flex items-start col-span-8">
+              <span className="w-[150px]">Question:</span>
+              <div className="flex-1">
+                <Textarea
+                  rows={1}
+                  value={value}
+                  onChange={onChange}
+                  className="w-full"
+                  placeholder="Enter question"
+                  error={!!error?.message}
+                />
+                {error?.message && (
+                  <p className="mt-1 text-xs text-red-400">{error.message}</p>
+                )}
+              </div>
+            </div>
+          )}
+        />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              className="col-span-1 rounded-full mx-auto"
+              variant={"ghost"}
+              size={"icon-lg"}
+            >
+              <Image className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add image</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Controller
+          control={control}
+          name={`${baseName}.${index}.customField.fieldType`}
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <div className="col-span-3">
+              <Select value={value} onValueChange={onChange}>
+                <SelectTrigger className="w-full" error={!!error?.message}>
+                  <SelectValue placeholder="Select field type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {FieldTypeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
               {error?.message && (
                 <p className="mt-1 text-xs text-red-400">{error.message}</p>
               )}
             </div>
-          </div>
-        )}
+          )}
+        />
+      </div>
+      <ResizableImage
+        keepRatio={true}
+        src="https://i.pinimg.com/474x/f6/5d/b2/f65db2e8b779347d225f908e54e382fb.jpg"
       />
-
-      <Controller
+      {/* <Controller
         control={control}
         name={`${baseName}.${index}.customField.fieldType`}
         render={({ field: { value, onChange }, fieldState: { error } }) => (
@@ -626,7 +667,7 @@ export default function CustomField({
             </div>
           </div>
         )}
-      />
+      /> */}
 
       {fieldTypeWatch && renderFieldType(fieldTypeWatch)}
       <Separator orientation="horizontal" />
