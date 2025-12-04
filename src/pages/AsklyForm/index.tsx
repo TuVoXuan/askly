@@ -45,7 +45,6 @@ const AsklyFormSchema = Yup.object().shape({
                         return value?.size <= maxSizeInBytes;
                       }
                     ),
-                  options: Yup.string().optional(),
                   min: Yup.number(),
                   max: Yup.number().when(
                     ["fieldType", "min"],

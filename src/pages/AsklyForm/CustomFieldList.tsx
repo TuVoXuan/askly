@@ -31,11 +31,11 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
     remove: removeCustomField,
     swap: swapCustomField,
     insert: insertCustomField,
+    update: updateCustomField,
   } = useFieldArray({
     control,
     name: `pages.${pageIndex}.itemFields`,
   });
-
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

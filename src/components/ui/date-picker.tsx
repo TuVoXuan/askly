@@ -12,6 +12,7 @@ interface DatePickerProps {
   dateRange?: DateRange;
   onSingleSelect?: (date: Date | undefined) => void;
   onRangeSelect?: (dateRange: DateRange | undefined) => void;
+  disabled?: boolean;
 }
 
 export default function DatePicker({
@@ -20,6 +21,7 @@ export default function DatePicker({
   dateRange,
   onRangeSelect,
   onSingleSelect,
+  disabled = false,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
 
@@ -58,6 +60,7 @@ export default function DatePicker({
               onSingleSelect?.(date);
               setOpen(false);
             }}
+            disabled={disabled}
           />
         )}
         {mode === "range" && (
@@ -68,6 +71,7 @@ export default function DatePicker({
               onRangeSelect?.(range);
             }}
             numberOfMonths={2}
+            disabled={disabled}
           />
         )}
       </PopoverContent>
