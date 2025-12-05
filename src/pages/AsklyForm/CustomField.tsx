@@ -25,7 +25,6 @@ import { EFieldType } from "@/types/enum";
 import { toSlug } from "@/utils/String";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { update } from "lodash";
 import {
   CircleQuestionMark,
   Copy,
@@ -35,7 +34,6 @@ import {
   Trash2,
 } from "lucide-react";
 import moment from "moment";
-import { useEffect } from "react";
 import { Controller } from "react-hook-form";
 
 const FieldTypeOptions = [

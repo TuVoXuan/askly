@@ -22,16 +22,15 @@ interface Props {
   show?: boolean;
 }
 
-export default function CustomFieldList({ pageIndex, show }: Props) {
+export default function ItemFieldList({ pageIndex, show }: Props) {
   const { control, watch, getValues } = useFormContext();
 
   const {
-    fields: customFields,
-    append: addCustomField,
-    remove: removeCustomField,
-    swap: swapCustomField,
-    insert: insertCustomField,
-    update: updateCustomField,
+    fields: itemFields,
+    append: addItemField,
+    remove: removeItemField,
+    swap: swapItemField,
+    insert: insertItemField,
   } = useFieldArray({
     control,
     name: `pages.${pageIndex}.itemFields`,
@@ -46,14 +45,14 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = customFields.findIndex((item) => item.id === active.id);
-      const newIndex = customFields.findIndex((item) => item.id === over?.id);
-      swapCustomField(oldIndex, newIndex);
+      const oldIndex = itemFields.findIndex((item) => item.id === active.id);
+      const newIndex = itemFields.findIndex((item) => item.id === over?.id);
+      swapItemField(oldIndex, newIndex);
     }
   }
 
   function handleAppendCustomField() {
-    addCustomField({
+    addItemField({
       question: "",
       isRequired: false,
       fieldType: "",
@@ -64,7 +63,7 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
     const fieldToCopy = cloneDeep(
       getValues(`pages.${pageIndex}.itemFields.${index}`)
     );
-    insertCustomField(index + 1, fieldToCopy);
+    insertItemField(index + 1, fieldToCopy);
   }
 
   if (!show) return null;
@@ -80,17 +79,17 @@ export default function CustomFieldList({ pageIndex, show }: Props) {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={customFields}
+          items={itemFields}
           strategy={verticalListSortingStrategy}
         >
-          {customFields.map((item, index) => (
+          {itemFields.map((item, index) => (
             <CustomField
               key={item.id}
               control={control}
               watch={watch}
               index={index}
               id={item.id}
-              onRemove={removeCustomField}
+              onRemove={removeItemField}
               onCopy={handleCopyCustomField}
               baseName={`pages.${pageIndex}.itemFields`}
             />

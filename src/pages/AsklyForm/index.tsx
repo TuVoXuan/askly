@@ -4,9 +4,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import CustomFieldList from "./CustomFieldList";
+import ItemFieldList from "./ItemFieldList";
 import PageItem from "./PageItem";
 import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const AsklyFormSchema = Yup.object().shape({
   pages: Yup.array()
@@ -190,8 +192,17 @@ export default function AsklyForm() {
       </div>
       <FormProvider {...methods}>
         <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+          {activePageIndex === 0 && (
+            <div className="p-4 rounded-sm border w-[800px] space-y-3">
+              <Input
+                className="text-4xl! py-8!"
+                placeholder="Form doesn't have title..."
+              />
+              <Textarea placeholder="Form description..." />
+            </div>
+          )}
           {pageFields.map((page, index) => (
-            <CustomFieldList
+            <ItemFieldList
               key={page.id}
               pageIndex={index}
               show={index === activePageIndex}
