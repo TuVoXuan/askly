@@ -17,6 +17,8 @@ import { Plus } from "lucide-react";
 import CustomField from "./CustomField";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { cloneDeep } from "lodash";
+import { EItemField } from "@/types/enum";
+import TitleField from "./TitleField";
 interface Props {
   pageIndex: number;
   show?: boolean;
@@ -51,12 +53,25 @@ export default function ItemFieldList({ pageIndex, show }: Props) {
     }
   }
 
-  function handleAppendCustomField() {
-    addItemField({
-      question: "",
-      isRequired: false,
-      fieldType: "",
-    });
+  function handleAppendItemField(type: string) {
+    if (type === EItemField.CUSTOM_FIELD) {
+      addItemField({
+        type: EItemField.CUSTOM_FIELD,
+        customField: {
+          question: "",
+          isRequired: false,
+          fieldType: "",
+        },
+      });
+    } else {
+      addItemField({
+        type: EItemField.TITLE_FIELD,
+        titleField: {
+          title: "",
+          description: "",
+        },
+      });
+    }
   }
 
   function handleCopyCustomField(index: number) {
@@ -70,8 +85,11 @@ export default function ItemFieldList({ pageIndex, show }: Props) {
 
   return (
     <>
-      <Button onClick={handleAppendCustomField}>
+      <Button onClick={() => handleAppendItemField(EItemField.CUSTOM_FIELD)}>
         <Plus /> Add Field
+      </Button>
+      <Button onClick={() => handleAppendItemField(EItemField.TITLE_FIELD)}>
+        <Plus /> Add Title Field
       </Button>
       <DndContext
         sensors={sensors}
@@ -82,18 +100,36 @@ export default function ItemFieldList({ pageIndex, show }: Props) {
           items={itemFields}
           strategy={verticalListSortingStrategy}
         >
-          {itemFields.map((item, index) => (
-            <CustomField
-              key={item.id}
-              control={control}
-              watch={watch}
-              index={index}
-              id={item.id}
-              onRemove={removeItemField}
-              onCopy={handleCopyCustomField}
-              baseName={`pages.${pageIndex}.itemFields`}
-            />
-          ))}
+          {itemFields.map((item, index) => {
+            const typeWatch = watch(
+              `pages.${pageIndex}.itemFields.${index}.type`
+            );
+            if (typeWatch === EItemField.CUSTOM_FIELD) {
+              return (
+                <CustomField
+                  key={item.id}
+                  control={control}
+                  watch={watch}
+                  index={index}
+                  id={item.id}
+                  onRemove={removeItemField}
+                  onCopy={handleCopyCustomField}
+                  baseName={`pages.${pageIndex}.itemFields`}
+                />
+              );
+            }
+            return (
+              <TitleField
+                key={item.id}
+                control={control}
+                id={item.id}
+                index={index}
+                onRemove={removeItemField}
+                watch={watch}
+                baseName={`pages.${pageIndex}.itemFields`}
+              />
+            );
+          })}
         </SortableContext>
       </DndContext>
     </>

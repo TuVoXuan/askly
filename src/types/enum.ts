@@ -15,3 +15,8 @@ export const EFieldType = {
   FILE: 'file',
   IMAGE: 'image',
 }
+
+export const EItemField = {
+  CUSTOM_FIELD: "custom-field",
+  TITLE_FIELD: "title-field",
+};

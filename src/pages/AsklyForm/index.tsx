@@ -9,6 +9,7 @@ import PageItem from "./PageItem";
 import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { EItemField } from "@/types/enum";
 
 const AsklyFormSchema = Yup.object().shape({
   pages: Yup.array()
@@ -17,6 +18,9 @@ const AsklyFormSchema = Yup.object().shape({
         itemFields: Yup.array()
           .of(
             Yup.object().shape({
+              type: Yup.string()
+                .oneOf(Object.values(EItemField), "Invalid enum type")
+                .required(),
               customField: Yup.object()
                 .shape({
                   question: Yup.string().required("Question is required!"),
@@ -78,11 +82,21 @@ const AsklyFormSchema = Yup.object().shape({
                   isMultipleFiles: Yup.boolean(),
                   maxFileSize: Yup.number(),
                 })
+                .when("type", {
+                  is: EItemField.CUSTOM_FIELD,
+                  then: (schema) => schema,
+                  otherwise: (schema) => schema.strip(),
+                })
                 .optional(),
               titleField: Yup.object()
                 .shape({
-                  title: Yup.string(),
+                  title: Yup.string().required("Title is required."),
                   description: Yup.string(),
+                })
+                .when("type", {
+                  is: EItemField.TITLE_FIELD,
+                  then: (schema) => schema,
+                  otherwise: (schema) => schema.strip(),
                 })
                 .optional(),
             })
@@ -107,6 +121,7 @@ export default function AsklyForm() {
         {
           itemFields: [
             {
+              type: EItemField.CUSTOM_FIELD,
               customField: {
                 question: "",
                 isRequired: false,
@@ -132,6 +147,7 @@ export default function AsklyForm() {
     appendPage({
       itemFields: [
         {
+          type: EItemField.CUSTOM_FIELD,
           customField: {
             question: "",
             isRequired: false,
