@@ -21,7 +21,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { EFieldType } from "@/types/enum";
+import { useItemFieldContext } from "@/contexts/ItemFieldContext";
+import { cn } from "@/lib/utils";
+import { EFieldType, EItemField } from "@/types/enum";
 import { toSlug } from "@/utils/String";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -34,7 +36,9 @@ import {
   Trash2,
 } from "lucide-react";
 import moment from "moment";
+import { useMemo } from "react";
 import { Controller } from "react-hook-form";
+import ItemFieldActionBar from "./ItemFieldActionBar";
 
 const FieldTypeOptions = [
   { label: "Number", value: EFieldType.NUMBER },
@@ -65,8 +69,8 @@ interface ICustomFieldProps {
   watch: any;
   index: number;
   id: string;
-  onCopy: (index: number) => void;
-  onRemove: (index: number) => void;
+  activeItemField?: string;
+  onSetActiveItemField: (id: string) => void;
   // baseName is the path prefix for the field array, e.g. "pages.0.customFields".
   // Default kept as "customFields" for backward compatibility.
   baseName?: string;
@@ -77,12 +81,14 @@ export default function CustomField({
   watch,
   index,
   id,
-  onCopy,
-  onRemove,
+  activeItemField,
+  onSetActiveItemField,
   baseName = "customFields",
 }: ICustomFieldProps) {
+  const { copy, remove } = useItemFieldContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
+  const isActive = useMemo(() => activeItemField === id, [activeItemField, id]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -107,9 +113,9 @@ export default function CustomField({
               type="number"
               disabled
               placeholder="type answer here..."
-              className="ml-[150px] w-[200px]"
+              className="w-[200px]"
             />
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -166,9 +172,9 @@ export default function CustomField({
               type="number"
               disabled
               placeholder="type answer here..."
-              className="ml-[150px] w-[200px]"
+              className="w-[200px]"
             />
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -244,11 +250,11 @@ export default function CustomField({
       case EFieldType.DATE:
         return (
           <>
-            <div className="px-[150px]">
+            <div>
               <DatePicker disabled />
             </div>
 
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -312,11 +318,11 @@ export default function CustomField({
       case EFieldType.DATE_TIME:
         return (
           <>
-            <div className="px-[150px]">
+            <div>
               <DatePicker disabled />
             </div>
 
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -380,10 +386,11 @@ export default function CustomField({
       case EFieldType.DATE_RANGE:
         return (
           <>
-            <div className="px-[150px]">
+            <div>
               <DatePicker mode="range" disabled />
             </div>
-            <div className="relative p-3 border rounded-sm space-y-3">
+
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -447,11 +454,11 @@ export default function CustomField({
       case EFieldType.FILE:
         return (
           <>
-            <div className="flex items-center gap-x-2 pl-[150px]">
+            <div className="flex items-center gap-x-2">
               <Button disabled>Upload file</Button>
               <Input placeholder="file-name" disabled />
             </div>
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -504,11 +511,11 @@ export default function CustomField({
       case EFieldType.IMAGE:
         return (
           <>
-            <div className="flex items-center gap-x-2 pl-[150px]">
+            <div className="flex items-center gap-x-2">
               <Button disabled>Upload file</Button>
               <Input placeholder="file-name" disabled />
             </div>
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -562,7 +569,7 @@ export default function CustomField({
       case EFieldType.CHECKBOX:
         return (
           <>
-            <div className="pl-[150px] space-y-2">
+            <div className="space-y-2">
               {listOptionsWatch &&
                 listOptionsWatch
                   .split("\n")
@@ -579,7 +586,7 @@ export default function CustomField({
                   ))}
             </div>
 
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -635,7 +642,7 @@ export default function CustomField({
       case EFieldType.RADIO:
         return (
           <>
-            <RadioGroup className="pl-[150px]">
+            <RadioGroup>
               {listOptionsWatch &&
                 listOptionsWatch
                   .split("\n")
@@ -652,7 +659,7 @@ export default function CustomField({
                   ))}
             </RadioGroup>
 
-            <div className="relative p-3 border rounded-sm space-y-3">
+            <div className="relative p-3 border rounded-sm space-y-3 mt-4">
               <div className="absolute top-0 left-4 -translate-y-1/2 flex items-center gap-x-2 bg-white px-2">
                 <Settings className="size-4" />
                 <span className="text-sm">Setting field</span>
@@ -693,8 +700,20 @@ export default function CustomField({
   return (
     <div
       style={style}
-      className="rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white"
+      className={cn(
+        "relative rounded-sm shadow border py-2 px-3 space-y-3 w-[800px] bg-white",
+        isActive && "border-l-[5px] border-l-blue-400"
+      )}
+      onClick={() => onSetActiveItemField(id)}
     >
+      {isActive && (
+        <ItemFieldActionBar
+          index={index}
+          itemFieldType={EItemField.CUSTOM_FIELD}
+          className="absolute -right-4 top-0 translate-x-full"
+        />
+      )}
+
       <div className="flex justify-center w-full">
         <button
           ref={setNodeRef}
@@ -712,7 +731,6 @@ export default function CustomField({
           name={`${baseName}.${index}.customField.question`}
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <div className="flex items-start col-span-8">
-              <span className="w-[150px]">Question:</span>
               <div className="flex-1">
                 <Textarea
                   rows={1}
@@ -780,7 +798,7 @@ export default function CustomField({
               size={"icon-lg"}
               variant={"ghost"}
               className="rounded-full"
-              onClick={() => onCopy(index)}
+              onClick={() => copy?.(index)}
             >
               <Copy />
             </Button>
@@ -796,7 +814,7 @@ export default function CustomField({
               size={"icon-lg"}
               variant={"ghost"}
               className="rounded-full"
-              onClick={() => onRemove(index)}
+              onClick={() => remove?.(index)}
             >
               <Trash2 />
             </Button>

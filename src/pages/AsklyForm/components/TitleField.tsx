@@ -8,17 +8,23 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripHorizontal, Trash2 } from "lucide-react";
+import { Copy, GripHorizontal, Trash2 } from "lucide-react";
+import { useMemo } from "react";
 import { Controller } from "react-hook-form";
+import ItemFieldActionBar from "./ItemFieldActionBar";
+import { EItemField } from "@/types/enum";
+import { useItemFieldContext } from "@/contexts/ItemFieldContext";
 
 interface ITtitleFieldProps {
   control: any;
   watch: any;
   index: number;
   id: string;
-  onRemove: (index: number) => void;
+  activeItemField?: string;
+  onSetActiveItemField: (id: string) => void;
   // baseName is the path prefix for the field array, e.g. "pages.0.titleField".
   // Default kept as "titleField" for backward compatibility.
   baseName?: string;
@@ -28,20 +34,35 @@ export default function TitleField({
   control,
   index,
   id,
-  onRemove,
+  activeItemField,
+  onSetActiveItemField,
   baseName,
 }: ITtitleFieldProps) {
+  const { remove, copy } = useItemFieldContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  const isActive = useMemo(() => activeItemField === id, [activeItemField, id]);
+
   return (
     <div
       style={style}
-      className="rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white"
+      className={cn(
+        "relative rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white",
+        isActive && "border-l-[5px] border-l-blue-400"
+      )}
+      onClick={() => onSetActiveItemField(id)}
     >
+      {isActive && (
+        <ItemFieldActionBar
+          index={index}
+          itemFieldType={EItemField.TITLE_FIELD}
+          className="absolute -right-4 top-0 translate-x-full"
+        />
+      )}
       <div className="flex justify-center w-full">
         <button
           ref={setNodeRef}
@@ -92,7 +113,23 @@ export default function TitleField({
               size={"icon-lg"}
               variant={"ghost"}
               className="rounded-full"
-              onClick={() => onRemove(index)}
+              onClick={() => copy?.(index)}
+            >
+              <Copy />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Copy</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size={"icon-lg"}
+              variant={"ghost"}
+              className="rounded-full"
+              onClick={() => remove?.(index)}
             >
               <Trash2 />
             </Button>

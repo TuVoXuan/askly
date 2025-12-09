@@ -1,17 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import * as Yup from "yup";
-import ItemFieldList from "./ItemFieldList";
-import PageItem from "./PageItem";
-import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EItemField } from "@/types/enum";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
+import * as Yup from "yup";
+import ItemFieldList from "./components/ItemFieldList";
+import PageItem from "./components/PageItem";
 
 const AsklyFormSchema = Yup.object().shape({
+  name: Yup.string().required("Title of form is required."),
+  description: Yup.string(),
   pages: Yup.array()
     .of(
       Yup.object().shape({
@@ -113,6 +120,7 @@ type AsklyFormDataType = Yup.InferType<typeof AsklyFormSchema>;
 
 export default function AsklyForm() {
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
+  const [activeItemField, setActiveItemField] = useState<string>();
 
   const methods = useForm({
     resolver: yupResolver(AsklyFormSchema),
@@ -210,11 +218,34 @@ export default function AsklyForm() {
         <div className="flex-1 p-4 space-y-3 overflow-y-auto">
           {activePageIndex === 0 && (
             <div className="p-4 rounded-sm border w-[800px] space-y-3">
-              <Input
-                className="text-4xl! py-8!"
-                placeholder="Form doesn't have title..."
+              <Controller
+                control={methods.control}
+                name="name"
+                render={({
+                  field: { value, onChange },
+                  fieldState: { error },
+                }) => (
+                  <Input
+                    className="text-4xl! py-8!"
+                    placeholder="Form doesn't have title..."
+                    value={value}
+                    onChange={onChange}
+                    helperText={error?.message}
+                  />
+                )}
               />
-              <Textarea placeholder="Form description..." />
+
+              <Controller
+                control={methods.control}
+                name="description"
+                render={({ field: { value, onChange } }) => (
+                  <Textarea
+                    placeholder="Form description..."
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
+              />
             </div>
           )}
           {pageFields.map((page, index) => (
@@ -222,6 +253,8 @@ export default function AsklyForm() {
               key={page.id}
               pageIndex={index}
               show={index === activePageIndex}
+              onSetActiveItemField={setActiveItemField}
+              activeItemField={activeItemField}
             />
           ))}
         </div>
