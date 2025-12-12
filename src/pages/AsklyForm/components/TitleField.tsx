@@ -51,7 +51,7 @@ export default function TitleField({
     <div
       style={style}
       className={cn(
-        "relative rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white",
+        "relative rounded-sm border py-2 px-3 space-y-3 w-[800px] bg-white shadow",
         isActive && "border-l-[5px] border-l-blue-400"
       )}
       onClick={() => onSetActiveItemField(id)}

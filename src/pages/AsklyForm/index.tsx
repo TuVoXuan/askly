@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { EItemField } from "@/types/enum";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Plus } from "lucide-react";
+import { Plus, Palette, Eye } from "lucide-react";
 import { useState } from "react";
 import {
   Controller,
@@ -15,6 +15,12 @@ import {
 import * as Yup from "yup";
 import ItemFieldList from "./components/ItemFieldList";
 import PageItem from "./components/PageItem";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import SettingUIDrawer from "./components/SettingUIDrawer";
 
 const AsklyFormSchema = Yup.object().shape({
   name: Yup.string().required("Title of form is required."),
@@ -120,7 +126,8 @@ type AsklyFormDataType = Yup.InferType<typeof AsklyFormSchema>;
 
 export default function AsklyForm() {
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
-  const [activeItemField, setActiveItemField] = useState<string>();
+  const [openSettingUIDrawer, setOpenSettingUIDrawer] =
+    useState<boolean>(false);
 
   const methods = useForm({
     resolver: yupResolver(AsklyFormSchema),
@@ -172,7 +179,7 @@ export default function AsklyForm() {
   }
 
   return (
-    <div className="flex h-[calc(100%-57px)] ">
+    <div className="relative flex h-[calc(100%-57px)] ">
       <div className="flex flex-col border-r">
         <div className="flex-1 p-4 space-y-2 overflow-y-auto">
           <div className="flex items-center flex-col gap-y-3">
@@ -215,9 +222,9 @@ export default function AsklyForm() {
         </div>
       </div>
       <FormProvider {...methods}>
-        <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center p-4 space-y-3 overflow-y-auto">
           {activePageIndex === 0 && (
-            <div className="p-4 rounded-sm border w-[800px] space-y-3">
+            <div className="p-4 rounded-sm border w-[800px] space-y-3 shadow">
               <Controller
                 control={methods.control}
                 name="name"
@@ -226,7 +233,7 @@ export default function AsklyForm() {
                   fieldState: { error },
                 }) => (
                   <Input
-                    className="text-4xl! py-8!"
+                    className="text-3xl! py-6!"
                     placeholder="Form doesn't have title..."
                     value={value}
                     onChange={onChange}
@@ -253,12 +260,45 @@ export default function AsklyForm() {
               key={page.id}
               pageIndex={index}
               show={index === activePageIndex}
-              onSetActiveItemField={setActiveItemField}
-              activeItemField={activeItemField}
             />
           ))}
         </div>
       </FormProvider>
+
+      {/* Config site */}
+      <div className="absolute bottom-4 right-4 flex flex-col gap-y-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant={"outline"} className="rounded-full" size={"icon"}>
+              <Eye className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Preview</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={"outline"}
+              className="rounded-full"
+              size={"icon"}
+              onClick={() => setOpenSettingUIDrawer(true)}
+            >
+              <Palette className="size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p>Config UI</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      <SettingUIDrawer
+        open={openSettingUIDrawer}
+        onOpenChange={setOpenSettingUIDrawer}
+      />
     </div>
   );
 }

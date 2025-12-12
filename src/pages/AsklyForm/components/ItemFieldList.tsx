@@ -18,20 +18,16 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import CustomField from "./CustomField";
 import TitleField from "./TitleField";
 import { cloneDeep } from "lodash";
+import { useEffect, useState } from "react";
 
 interface Props {
   pageIndex: number;
   show?: boolean;
-  activeItemField?: string;
-  onSetActiveItemField: (id: string) => void;
 }
 
-export default function ItemFieldList({
-  pageIndex,
-  show,
-  activeItemField,
-  onSetActiveItemField,
-}: Props) {
+export default function ItemFieldList({ pageIndex, show }: Props) {
+  const [activeItemField, setActiveItemField] = useState<string>();
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -67,6 +63,12 @@ export default function ItemFieldList({
     insertItemField(index + 1, fieldToCopy);
   }
 
+  useEffect(() => {
+    if (show && itemFields.length > 0) {
+      setActiveItemField(itemFields[0].id);
+    }
+  }, [show, itemFields]);
+
   if (!show) return null;
 
   return (
@@ -101,7 +103,7 @@ export default function ItemFieldList({
                     index={index}
                     id={item.id}
                     baseName={`pages.${pageIndex}.itemFields`}
-                    onSetActiveItemField={onSetActiveItemField}
+                    onSetActiveItemField={setActiveItemField}
                     activeItemField={activeItemField}
                   />
                 );
@@ -114,7 +116,7 @@ export default function ItemFieldList({
                   index={index}
                   watch={watch}
                   baseName={`pages.${pageIndex}.itemFields`}
-                  onSetActiveItemField={onSetActiveItemField}
+                  onSetActiveItemField={setActiveItemField}
                   activeItemField={activeItemField}
                 />
               );
