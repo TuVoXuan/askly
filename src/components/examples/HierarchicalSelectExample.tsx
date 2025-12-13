@@ -14,32 +14,32 @@ export function HierarchicalSelectExample() {
   const options = [
     {
       value: "fruits",
-      name: "Fruits",
+      name: "Fruits hello world today is good",
       childPosition: "right" as const,
       childOpts: [
-        { value: "apple", name: "🍎 Apple" },
-        { value: "banana", name: "🍌 Banana" },
-        { value: "orange", name: "🍊 Orange" },
+        { value: "apple", name: "🍎 Apple hello world today is good" },
+        { value: "banana", name: "🍌 Banana hello world today is good" },
+        { value: "orange", name: "🍊 Orange hello world today is good" },
       ],
     },
     {
       value: "vegetables",
-      name: "Vegetables",
+      name: "Vegetables hello world today is good",
       childPosition: "left" as const,
       childOpts: [
-        { value: "carrot", name: "🥕 Carrot" },
-        { value: "broccoli", name: "🥦 Broccoli" },
-        { value: "spinach", name: "🥬 Spinach" },
+        { value: "carrot", name: "🥕 Carrot hello world today is good" },
+        { value: "broccoli", name: "🥦 Broccoli hello world today is good" },
+        { value: "spinach", name: "🥬 Spinach hello world today is good" },
       ],
     },
     {
       value: "dairy",
-      name: "Dairy",
+      name: "Dairy hello world today is good",
       childPosition: "right" as const,
       childOpts: [
-        { value: "milk", name: "🥛 Milk" },
-        { value: "cheese", name: "🧀 Cheese" },
-        { value: "yogurt", name: "🍶 Yogurt" },
+        { value: "milk", name: "🥛 Milk hello world today is good" },
+        { value: "cheese", name: "🧀 Cheese hello world today is good" },
+        { value: "yogurt", name: "🍶 Yogurt hello world today is good" },
       ],
     },
   ];
@@ -54,6 +54,7 @@ export function HierarchicalSelectExample() {
         options={options}
         value={selected}
         onValueChange={setSelected}
+        className="w-[210px]"
       />
 
       <div className="mt-4 p-3 bg-muted rounded-md">
