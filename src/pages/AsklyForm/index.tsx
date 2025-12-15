@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SettingUIDrawer from "./components/SettingUIDrawer";
+import useFormStore from "@/store/FormStore";
 
 const AsklyFormSchema = Yup.object().shape({
   name: Yup.string().required("Title of form is required."),
@@ -128,6 +129,7 @@ export default function AsklyForm() {
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
   const [openSettingUIDrawer, setOpenSettingUIDrawer] =
     useState<boolean>(false);
+  const { config } = useFormStore();
 
   const methods = useForm({
     resolver: yupResolver(AsklyFormSchema),
@@ -179,7 +181,7 @@ export default function AsklyForm() {
   }
 
   return (
-    <div className="relative flex h-[calc(100%-57px)] ">
+    <div className="relative flex h-[calc(100%-57px)]">
       <div className="flex flex-col border-r">
         <div className="flex-1 p-4 space-y-2 overflow-y-auto">
           <div className="flex items-center flex-col gap-y-3">
@@ -222,9 +224,19 @@ export default function AsklyForm() {
         </div>
       </div>
       <FormProvider {...methods}>
-        <div className="flex-1 flex flex-col items-center p-4 space-y-3 overflow-y-auto">
+        <div
+          className="flex-1 flex flex-col items-center p-4 space-y-3 overflow-y-auto"
+          style={{
+            backgroundColor: config.bgColor,
+          }}
+        >
           {activePageIndex === 0 && (
-            <div className="p-4 rounded-sm border w-[800px] space-y-3 shadow">
+            <div
+              className="p-4 rounded-sm border w-[800px] space-y-3 shadow border-t-[5px] bg-white"
+              style={{
+                borderTopColor: config.color,
+              }}
+            >
               <Controller
                 control={methods.control}
                 name="name"

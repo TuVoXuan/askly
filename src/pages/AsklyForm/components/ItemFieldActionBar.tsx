@@ -50,7 +50,7 @@ export default function ItemFieldActionBar({
   return (
     <div
       className={cn(
-        "flex flex-col gap-y-1 p-1 rounded-md border shadow",
+        "flex flex-col gap-y-1 p-1 rounded-md border shadow bg-white",
         className
       )}
     >
