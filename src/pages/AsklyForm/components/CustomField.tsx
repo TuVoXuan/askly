@@ -39,6 +39,7 @@ import moment from "moment";
 import { useMemo } from "react";
 import { Controller } from "react-hook-form";
 import ItemFieldActionBar from "./ItemFieldActionBar";
+import useFormStore from "@/store/FormStore";
 
 const FieldTypeOptions = [
   { label: "Number", value: EFieldType.NUMBER },
@@ -85,6 +86,7 @@ export default function CustomField({
   onSetActiveItemField,
   baseName = "customFields",
 }: ICustomFieldProps) {
+  const { config } = useFormStore();
   const { copy, remove } = useItemFieldContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -739,6 +741,10 @@ export default function CustomField({
                   className="w-full"
                   placeholder="Enter question"
                   error={!!error?.message}
+                  style={{
+                    fontSize: config.question.fontSize + "px",
+                    fontWeight: config.question.fontWeight,
+                  }}
                 />
                 {error?.message && (
                   <p className="mt-1 text-xs text-red-400">{error.message}</p>

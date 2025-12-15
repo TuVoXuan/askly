@@ -15,14 +15,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useGenerateSubColor from "@/hooks/color/useGenerateSubColor";
+import useFormStore, { defaultValueConfig } from "@/store/FormStore";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { debounce } from "lodash";
+import { cloneDeep, debounce } from "lodash";
 import { Palette } from "lucide-react";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { FontFamily, FontSize, FontWeights } from "./FakeData";
-import useFormStore from "@/store/FormStore";
+import {
+  FontFamily,
+  FontSizeQuestion,
+  FontSizeText,
+  FontSizeTitle,
+  FontWeights,
+} from "./FakeData";
 
 const ColorOptions = [
   "#db4437",
@@ -73,25 +79,7 @@ export default function SettingUIDrawer({
   const { setConfig } = useFormStore();
   const { control, handleSubmit, watch, setValue } = useForm({
     resolver: yupResolver(SettingUISchema),
-    defaultValues: {
-      title: {
-        fontFamily: "nunito",
-        fontWeight: "400",
-        fontSize: "20",
-      },
-      question: {
-        fontFamily: "nunito",
-        fontWeight: "400",
-        fontSize: "20",
-      },
-      text: {
-        fontFamily: "nunito",
-        fontWeight: "400",
-        fontSize: "20",
-      },
-      color: "#db4437",
-      bgColor: "#f8dad7",
-    },
+    defaultValues: cloneDeep(defaultValueConfig),
   });
   const watchFormValue = watch();
   const subColors = useGenerateSubColor(watchFormValue.color);
@@ -203,7 +191,7 @@ export default function SettingUIDrawer({
                           <SelectValue placeholder="Select a fruit" />
                         </SelectTrigger>
                         <SelectContent>
-                          {FontSize.map((size) => (
+                          {FontSizeTitle.map((size) => (
                             <SelectItem key={size.value} value={size.value}>
                               {size.name}
                             </SelectItem>
@@ -296,7 +284,7 @@ export default function SettingUIDrawer({
                           <SelectValue placeholder="Select a fruit" />
                         </SelectTrigger>
                         <SelectContent>
-                          {FontSize.map((size) => (
+                          {FontSizeQuestion.map((size) => (
                             <SelectItem key={size.value} value={size.value}>
                               {size.name}
                             </SelectItem>
@@ -389,7 +377,7 @@ export default function SettingUIDrawer({
                           <SelectValue placeholder="Select a fruit" />
                         </SelectTrigger>
                         <SelectContent>
-                          {FontSize.map((size) => (
+                          {FontSizeText.map((size) => (
                             <SelectItem key={size.value} value={size.value}>
                               {size.name}
                             </SelectItem>

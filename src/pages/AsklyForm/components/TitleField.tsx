@@ -17,6 +17,7 @@ import { Controller } from "react-hook-form";
 import ItemFieldActionBar from "./ItemFieldActionBar";
 import { EItemField } from "@/types/enum";
 import { useItemFieldContext } from "@/contexts/ItemFieldContext";
+import useFormStore from "@/store/FormStore";
 
 interface ITtitleFieldProps {
   control: any;
@@ -38,6 +39,7 @@ export default function TitleField({
   onSetActiveItemField,
   baseName,
 }: ITtitleFieldProps) {
+  const { config } = useFormStore();
   const { remove, copy } = useItemFieldContext();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -83,6 +85,10 @@ export default function TitleField({
             onChange={onChange}
             placeholder="Doesn't have title"
             helperText={error?.message}
+            style={{
+              fontSize: config.question.fontSize + "px",
+              fontWeight: config.question.fontWeight,
+            }}
           />
         )}
       />
@@ -97,6 +103,10 @@ export default function TitleField({
               onChange={onChange}
               placeholder="Description (optional)"
               error={!!error?.message}
+              style={{
+                fontSize: config.text.fontSize + "px",
+                fontWeight: config.text.fontWeight,
+              }}
             />
             {error?.message && (
               <p className="mt-1 text-xs text-red-400">{error.message}</p>

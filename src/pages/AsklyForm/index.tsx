@@ -245,7 +245,11 @@ export default function AsklyForm() {
                   fieldState: { error },
                 }) => (
                   <Input
-                    className="text-3xl! py-6!"
+                    className="py-6!"
+                    style={{
+                      fontSize: config.title.fontSize + "px",
+                      fontWeight: config.title.fontWeight,
+                    }}
                     placeholder="Form doesn't have title..."
                     value={value}
                     onChange={onChange}
@@ -262,6 +266,10 @@ export default function AsklyForm() {
                     placeholder="Form description..."
                     value={value}
                     onChange={onChange}
+                    style={{
+                      fontSize: config.text.fontSize + "px",
+                      fontWeight: config.text.fontWeight,
+                    }}
                   />
                 )}
               />
