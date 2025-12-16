@@ -6,7 +6,9 @@ import ProtectRoute from "@/components/ProtectRoute";
 import FormList from "@/pages/FormList";
 import { ERoutePath } from "./route-path.enum";
 import Signin from "@/pages/Auth/Signin/Signin";
-import Signup from "@/pages/Auth/SignUp/Signup";
+import Signup from "@/pages/Auth/Signup/Signup";
+import PageLayout from "@/components/layouts/PageLayout";
+import AsklyForm from "@/pages/AsklyForm";
 
 export const AppRoutes = createBrowserRouter([
   {
@@ -20,12 +22,20 @@ export const AppRoutes = createBrowserRouter([
             element: <ProtectRoute />,
             children: [
               {
-                index: true,
-                element: <Navigate to={`/${ERoutePath.FORM_LIST}`} />,
-              },
-              {
-                path: ERoutePath.FORM_LIST,
-                element: <FormList />,
+                element: <PageLayout />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to={`/${ERoutePath.FORM_LIST}`} />,
+                  },
+                  {
+                    path: ERoutePath.FORM_LIST,
+                    children: [
+                      { index: true, element: <FormList /> },
+                      { path: "create", element: <AsklyForm /> },
+                    ],
+                  },
+                ],
               },
             ],
           },

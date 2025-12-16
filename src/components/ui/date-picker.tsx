@@ -1,0 +1,80 @@
+import { useCallback, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { Button } from "./button";
+import { ChevronDownIcon } from "lucide-react";
+import { Calendar } from "./calendar";
+import type { DateRange } from "react-day-picker";
+import moment from "moment";
+
+interface DatePickerProps {
+  mode?: "single" | "range";
+  selectedDate?: Date;
+  dateRange?: DateRange;
+  onSingleSelect?: (date: Date | undefined) => void;
+  onRangeSelect?: (dateRange: DateRange | undefined) => void;
+  disabled?: boolean;
+}
+
+export default function DatePicker({
+  mode = "single",
+  selectedDate,
+  dateRange,
+  onRangeSelect,
+  onSingleSelect,
+  disabled = false,
+}: DatePickerProps) {
+  const [open, setOpen] = useState(false);
+
+  const renderSelectedDate = useCallback(() => {
+    if (mode === "single" && selectedDate) {
+      return <p>{moment(selectedDate).format("DD/MM/YYYY")}</p>;
+    }
+    if (mode === "range" && dateRange) {
+      return (
+        <p>{`${moment(dateRange.from).format("DD/MM/YYYY")} - ${moment(
+          dateRange.to
+        ).format("DD/MM/YYYY")}`}</p>
+      );
+    }
+    return <p className="text-muted-foreground">Select date</p>;
+  }, [mode, selectedDate, dateRange]);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          id="date"
+          className="justify-between font-normal w-fit"
+        >
+          {renderSelectedDate()}
+          <ChevronDownIcon />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+        {mode === "single" && (
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={(date) => {
+              onSingleSelect?.(date);
+              setOpen(false);
+            }}
+            disabled={disabled}
+          />
+        )}
+        {mode === "range" && (
+          <Calendar
+            mode="range"
+            selected={dateRange}
+            onSelect={(range) => {
+              onRangeSelect?.(range);
+            }}
+            numberOfMonths={2}
+            disabled={disabled}
+          />
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}

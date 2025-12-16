@@ -11,15 +11,15 @@ export default function ProtectRoute() {
   const { pathname, search } = useLocation();
   const redirectPath = `${pathname}${search}`;
 
-  if (!tokenObject?.refreshToken || !user) {
-    return (
-      <Navigate
-        to={`/${ERoutePath.SIGN_IN}?redirect=${encodeURIComponent(
-          redirectPath
-        )}`}
-      />
-    );
-  }
+  // if (!tokenObject?.refreshToken || !user) {
+  //   return (
+  //     <Navigate
+  //       to={`/${ERoutePath.SIGN_IN}?redirect=${encodeURIComponent(
+  //         redirectPath
+  //       )}`}
+  //     />
+  //   );
+  // }
 
   return <Outlet />;
 }
